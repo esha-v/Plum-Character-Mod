@@ -1,0 +1,13 @@
+<players root="gfx/characters/costumes_plum/" portraitroot="gfx/ui/stage/" nameimageroot="gfx/ui/boss/">
+    <player name="Plum"
+        skin="character_plum.png"
+        nameimage="playername_plum.png"
+        hp="4"
+        armor="2"
+        keys="1"
+        portrait="playerportrait_plum.png"
+        skinColor="-1"
+        items="465,597"
+        costumeSuffix="plum"
+    />
+</players>

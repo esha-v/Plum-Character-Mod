@@ -1,0 +1,4 @@
+<items gfxroot="gfx/items/" deathanm2="gfx/death_items.anm2" version ="1">
+    <active id ="0" name = "Plum's Bean" gfx="plums_bean.png" description="Poot!" quality="3" maxcharges="450" chargetype="timed"/>
+
+</items>
