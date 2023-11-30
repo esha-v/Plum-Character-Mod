@@ -2,12 +2,11 @@
     <player name="Plum"
         skin="character_plum.png"
         nameimage="playername_plum.png"
-        hp="4"
+        hp="2"
         armor="2"
-        keys="1"
         portrait="playerportrait_plum.png"
         skinColor="-1"
-        items="465,597"
+        items="465,597,120"
         costumeSuffix="plum"
     />
 </players>
