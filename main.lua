@@ -16,10 +16,8 @@ MyCharacterMod:AddCallback(ModCallbacks.MC_POST_PLAYER_INIT, MyCharacterMod.Give
 
 --------------------------------------------------------------------------------------------------
 
-
 local game = Game()
 local DAMAGE_REDUCTION = 0.6
-local multiplier = 0.9
 local timesRoomPlumSpawn = 0
 local numPlums = 0
 local SFXManager = SFXManager()
@@ -28,19 +26,23 @@ local Sound = {
     fluteSound = Isaac.GetSoundIdByName("flute2")
 }
 
+local function editTears(tears, inc)
+    local curr = 30/(tears+1)
+    return 30/(curr+inc)-1
+end
 
 local Plum = {
-    DAMAGE = -1.5,
+    DAMAGE = -.52,
     SPEED = -0.6,    
     TEARHEIGHT = 2,
     TEARFALLINGSPEED = 1,
     TEARRANGE=-100,
-    MAXFIREDELAY = 1.5,
-    LUCK = -2
-    
+    MAXFIREDELAY = 1.383,
+    LUCK = -2    
 }
 
 function Plum:HandleStartingStats(player, flag)
+    
 
     if player:GetPlayerType() ~= plumType then
         return 
@@ -62,7 +64,7 @@ function Plum:HandleStartingStats(player, flag)
 
     
     if flag == CacheFlag.CACHE_FIREDELAY then        
-        player.MaxFireDelay = player.MaxFireDelay + Plum.MAXFIREDELAY
+        player.MaxFireDelay = player.MaxFireDelay / Plum.MAXFIREDELAY
     end
 
     if flag == CacheFlag.CACHE_LUCK then        
@@ -77,9 +79,15 @@ end
 MyCharacterMod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, Plum.HandleStartingStats)
 
 
-local plumsBean = Isaac.GetItemIdByName("Plum's Bean")
+local plumsRecorder = Isaac.GetItemIdByName("Plum Recorder")
 
-function MyCharacterMod:plumsBeanUse(item)
+if EID then
+    -- EID function calls here ...
+    local plumRecorderDesc = "{{Blank}} On use, chance to#Summon Baby Plum for current room#Spawn 3 friendly Fruity Plums for current room#Spawn 1 friendly Fruity Plum for floor#Use any of the above effects and recharge"
+    EID:addCollectible(plumsRecorder, plumRecorderDesc)
+end
+
+function MyCharacterMod:plumsRecorderUse(item)
 
     local player = Isaac.GetPlayer()
 
@@ -93,23 +101,23 @@ function MyCharacterMod:plumsBeanUse(item)
     
 
     if randNum <= 350 then 
-        SFXManager:Play(SoundEffect.SOUND_FLUTE, 25, 2, false, .7)
+        SFXManager:Play(SoundEffect.SOUND_FLUTE, 1, 2, false, .7)
         for i=0,2,1
         do
             Isaac.Spawn(EntityType.ENTITY_FAMILIAR, FamiliarVariant.FRUITY_PLUM, 0, Isaac.GetPlayer().Position, Vector(0,0), nil)
         end
     elseif randNum > 350 and randNum <= 800 then
 
-        SFXManager:Play(SoundEffect.SOUND_FLUTE, 25, 2, false, 1)
+        SFXManager:Play(SoundEffect.SOUND_FLUTE, 1, 2, false, 1)
 
         Isaac.GetPlayer():UseActiveItem(CollectibleType.COLLECTIBLE_PLUM_FLUTE)
 
     elseif randNum>800 and randNum <= 925 then
-        SFXManager:Play(SoundEffect.SOUND_FLUTE, 25, 2, false, .8)
+        SFXManager:Play(SoundEffect.SOUND_FLUTE, 1, 2, false, .8)
         Isaac.Spawn(EntityType.ENTITY_FAMILIAR, FamiliarVariant.FRUITY_PLUM, 0, Isaac.GetPlayer().Position, Vector(0,0), nil)
         timesRoomPlumSpawn = timesRoomPlumSpawn + 1
     else
-        SFXManager:Play(SoundEffect.SOUND_FLUTE, 25, 2, false, 1.3)
+        SFXManager:Play(SoundEffect.SOUND_FLUTE, 1, 2, false, 1.3)
         player:SetActiveCharge(8,ActiveSlot.SLOT_POCKET)
         
         if randNum2 <=4 then
@@ -130,12 +138,24 @@ function MyCharacterMod:plumsBeanUse(item)
     return true
 end
 
-function MyCharacterMod:giveIsaacPlumsBean()
-    if Isaac.GetPlayer():GetPlayerType() ~= plumType then
+function MyCharacterMod:giveIsaacPlumsRecorder()
+
+    local player = Isaac.GetPlayer()
+
+    
+    ---Isaac.GetPlayer():GetEffects():AddCollectibleEffect(CollectibleType.COLLECTIBLE_ODD_MUSHROOM_THIN)
+
+    if player:GetPlayerType() ~= plumType then
         return 
     end
-    Isaac.GetPlayer():SetPocketActiveItem(plumsBean)
-    Isaac.GetPlayer():AddCollectible(CollectibleType.COLLECTIBLE_FATE, 0, false) --- also give fate!
+    player:SetPocketActiveItem(plumsRecorder)
+    ---player:GetEffects():AddCollectibleEffect(CollectibleType.COLLECTIBLE_ODD_MUSHROOM_THIN true)
+    player:AddCollectible(CollectibleType.COLLECTIBLE_FATE, 0, false) --- also give fate!
+    for i = 1, 7, 1 do
+        player:UsePill(PillEffect.PILLEFFECT_TEARS_DOWN, PillColor.PILL_NULL, UseFlag.USE_NOANIM|UseFlag.USE_NOANNOUNCER)
+    end
+    player:StopExtraAnimation()
+    SFXManager:Stop(267)
 end
 
 function MyCharacterMod:plumNewRoom()
@@ -143,7 +163,7 @@ function MyCharacterMod:plumNewRoom()
         return 
     end
     local player = Isaac.GetPlayer()
-    local sourceCollectibleID = plumsBean
+    local sourceCollectibleID = plumsRecorder
     local collectibleRNG = player:GetCollectibleRNG(sourceCollectibleID)
     local itemConfig = Isaac.GetItemConfig():GetCollectible(sourceCollectibleID)
     local targetCount=0
@@ -160,7 +180,7 @@ function MyCharacterMod:resetPlumCount()
         return 
     end
     local player = Isaac.GetPlayer()
-    local sourceCollectibleID = plumsBean
+    local sourceCollectibleID = plumsRecorder
     local collectibleRNG = player:GetCollectibleRNG(sourceCollectibleID)
     local itemConfig = Isaac.GetItemConfig():GetCollectible(sourceCollectibleID)
     timesRoomPlumSpawn=0
@@ -170,8 +190,8 @@ function MyCharacterMod:resetPlumCount()
 
 end
 
-MyCharacterMod:AddCallback(ModCallbacks.MC_POST_PLAYER_INIT, MyCharacterMod.giveIsaacPlumsBean)
-MyCharacterMod:AddCallback(ModCallbacks.MC_USE_ITEM, MyCharacterMod.plumsBeanUse, plumsBean)
+MyCharacterMod:AddCallback(ModCallbacks.MC_POST_PLAYER_INIT, MyCharacterMod.giveIsaacPlumsRecorder)
+MyCharacterMod:AddCallback(ModCallbacks.MC_USE_ITEM, MyCharacterMod.plumsRecorderUse, plumsRecorder)
 MyCharacterMod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, MyCharacterMod.plumNewRoom)
 MyCharacterMod:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, MyCharacterMod.resetPlumCount)
 MyCharacterMod:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, MyCharacterMod.resetPlumCount)
@@ -189,6 +209,7 @@ MyCharacterMod:AddCallback(ModCallbacks.MC_POST_PEFFECT_UPDATE, function(_, play
 
     local itemConfigItem = itemConfig:GetCollectible(CollectibleType.COLLECTIBLE_NEPTUNUS)
     player:RemoveCostume(itemConfigItem)
+    
     local itemConfigItem = itemConfig:GetCollectible(CollectibleType.COLLECTIBLE_ANALOG_STICK)
     player:RemoveCostume(itemConfigItem)
 
@@ -201,30 +222,19 @@ MyCharacterMod:AddCallback(ModCallbacks.MC_POST_PEFFECT_UPDATE, function(_, play
 
     local shootDir = player:GetAimDirection()
 
-    local blacklistedCollectibles = {CollectibleType.COLLECTIBLE_EPIC_FETUS,
-                                    CollectibleType.COLLECTIBLE_THE_LUDOVICO_TECHNIQUE, CollectibleType.COLLECTIBLE_MOMS_KNIFE, CollectibleType.COLLECTIBLE_MONSTROS_LUNG,
-                                    CollectibleType.COLLECTIBLE_SPIRIT_SWORD, CollectibleType.COLLECTIBLE_TECHNOLOGY} -- add more
-    local function checkBlacklist(player)
-        for _, collectible in ipairs(blacklistedCollectibles) do
-            if player:HasCollectible(collectible) then
-            return true
-            end
-        end
-
-        return false
-    end
+    
     
     -- if EntityTear.Exists
-    if not checkBlacklist(player) then
+    
 
-        if shootDir:Length() > 0.2 then
-            if player:HasCollectible(CollectibleType.COLLECTIBLE_C_SECTION) then
-                player:AddVelocity((-shootDir:Resized(0.1))*(player.ShotSpeed*2))
-            else         
-                player:AddVelocity((-shootDir:Resized(0.7))*(player.ShotSpeed*1.75)*(player.MoveSpeed*0.75))
-            end
+    if shootDir:Length() > 0.2 then
+        if player:HasCollectible(CollectibleType.COLLECTIBLE_C_SECTION) then
+            player:AddVelocity((-shootDir:Resized(0.1))*(player.ShotSpeed*2))
+        else         
+            player:AddVelocity((-shootDir:Resized(0.7))*(player.ShotSpeed*1.75)*(player.MoveSpeed*0.75))
         end
     end
+    
 
     ---player.AddPlayerFormCostume(PlayerForm.PLAYERFORM_LORD_OF_THE_FLIES)
 

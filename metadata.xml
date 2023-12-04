@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <metadata>
-    <name>Plum Character Mod</name>
+    <name>Another Plum</name>
     <directory>plum_character_mod</directory>
     <id>3099162661</id>
     <description>Plum Mod for Binding of Isaac! Created for Another Matt Playing Isaac :)</description>
-    <version>1.5</version>
+    <version>1.13</version>
     <visibility>Friends Only</visibility>
     <tag id="Lua"/>
     <tag id="Active Items"/>
