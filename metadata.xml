@@ -3,8 +3,26 @@
     <name>Another Plum</name>
     <directory>plum_character_mod</directory>
     <id>3099162661</id>
-    <description>Plum Mod for Binding of Isaac! Created for Another Matt Playing Isaac :)</description>
-    <version>1.13</version>
+    <description>New Character: Another Plum
+New Active Item: Plum Recorder
+
+Character Mod created for https://www.youtube.com/@AnotherMattPlayingIsaac
+Created by Augusata https://www.youtube.com/channel/UCelJsL147dvq2A9xa4M7UGg
+
+Have you ever wanted to feel like baby plum the way Spider-man for the PS5 makes you FEEL like Spider-man? Well now you can!
+
+Another Plum has innate knockback when firing, which scales with your speed! So be careful if you're at the speed cap..
+Alongside that, Another Plum starts out with Neptunus to make you really FEEL like you're Baby Plum.
+
+Another Plum starts with a custom pocket active item: Plum Recorder!
+Plum Recorder has a 4 room charge and has the chance to do one of the following when used:
+(%) chance to activate the &quot;Plum Flute&quot; affect, causing Baby Plum to assist Isaac for the current room
+(%) chance to spawn 3 Fruity Plum familiars to assist Isaac for the current room
+(%) chance to spawn 1 Fruity Plum familiar to assist Isaac for the remainder of the floor (similar to monster manual)
+(%) chance to use ANY of the 3 effects listed above &amp; recharge!
+
+Anyways thats the mod 🙂 thanks for checkin it out!</description>
+    <version>1.20</version>
     <visibility>Friends Only</visibility>
     <tag id="Lua"/>
     <tag id="Active Items"/>
